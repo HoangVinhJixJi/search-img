@@ -2,16 +2,14 @@ import './App.css';
 import React, { useState, useEffect} from 'react';
 
 import axios from 'axios';
-
 // Name app: searchimg
 // ACCESS_KEY: irCZM-4JHDCM-WqlguSykBh6tKkOJMI17LAL-AacwxI
-// SECRET_KEY: KHSvmiR-yMq5fkaJ8zjbANIMebye9sb-fbqhjm0Widc
 // Link: https://api.unsplash.com/photos/?client_id=irCZM-4JHDCM-WqlguSykBh6tKkOJMI17LAL-AacwxI
 
 function SearchBar({onSearch}) {
   const [query, setQuery] = useState('');
 
-  const handleSearch = () => {
+  const handleSearchBtn = () => {
     onSearch(query);
   }
 
@@ -22,12 +20,11 @@ function SearchBar({onSearch}) {
         value={query}
         onChange={(e) => 
         {
-          console.log("e.target.value: ", e.target.value)
           setQuery(e.target.value)
         }}
         placeholder="Search for photos"
       />
-      <button className='search-btn' onClick={handleSearch}>Search</button>
+      <button className='search-btn' onClick={handleSearchBtn}>Search</button>
     </div>
   );
 }
@@ -41,7 +38,6 @@ function Gallery({ images }){
   };
 
   return (
-    
     <>
       {images.map(image => (
         <div key={image.id} className="gallery-item">
@@ -68,29 +64,28 @@ function Modal({ image, onClose }) {
 
 export default function App() {
 
-  const [query, setQuery] = useState('');
-  const [searchResult, setSearchResult] = useState([]);
-  const [page, setPage] = useState(1); // TRang kết quả tìm kiếm
-  const [loading, setLoading] = useState(false);
-  const [moreResult, setMoreResult] = useState(true);
-  const [prevScrollY, setPrevScrollY] = useState(0);
+  const [query, setQuery] = useState('');//Từ khóa tìm kiếm
+  const [searchResult, setSearchResult] = useState([]); //Kết quả sau khi tìm kiếm
+  const [page, setPage] = useState(1); // Trang kết quả tìm kiếm
+  const [loading, setLoading] = useState(false); //Trạng thái chờ call API
+  const [moreResult, setMoreResult] = useState(true);//Còn kết quả khác
+  
 
   const isScrolledToBottom = (element) => {
     return window.scrollY + 800 >= element.scrollHeight ;//Khi thanh cuộn tới cuối danh sách
   }
   
   const handleScroll = () => {
-
     const gallery = document.querySelector('.gallery');
-    if (gallery && isScrolledToBottom(gallery) && !loading && moreResult && window.scrollY > prevScrollY) {
+    if (gallery && isScrolledToBottom(gallery) && !loading && moreResult) {
       // Đã cuộn xuống cuối danh sách hình ảnh, chưa tải hết, không trong quá trình tải, không tải lại
       setPage(prevPage => prevPage + 1);
     }
-    setPrevScrollY(window.scrollY); 
+    
   };
   useEffect(() => {// mounted Scroll
     window.addEventListener('scroll', handleScroll);
-    return () => { //unmounted Scroll
+    return () => { //clean up 
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
